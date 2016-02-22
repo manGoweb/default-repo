@@ -25,4 +25,4 @@ ln -s "$DEPLOY_DIR" "$PROJECT_DIR/live_stage" && mv -Tf "$PROJECT_DIR/live_stage
 
 echo "debug: script: reload php-fpm"
 # reliably clears opcache
-sudo /usr/bin/systemctl reload php-fpm.service
+sudo /usr/bin/systemctl reload php70-php-fpm.service
