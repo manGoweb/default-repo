@@ -10,11 +10,33 @@ IFS=$'\n\t'
 # "$PROJECT_DIR" absolute path to project directory
 # "$DEPLOY_DIR" absolute path to extracted stage
 
+function symlink-shared {
+	if [[ ! -d "$PROJECT_DIR/$1" ]]; then
+		mkdir -p "$PROJECT_DIR/$1"
+		chmod ug+rwX,o= "$PROJECT_DIR/$1"
+	fi
+	rm -rf "$DEPLOY_DIR/$1" && ln -s "$PROJECT_DIR/$1" "$DEPLOY_DIR/$1"
+}
+
 # For applications with mangoweb.blackbox
 #echo "script: decrypting configuration"
 #pushd "$DEPLOY_DIR"
 #/opt/blackbox/bin/blackbox_postdeploy
 #popd
+
+echo "script: creating local config"
+cp "$DEPLOY_DIR/config/config.prod.neon" "$DEPLOY_DIR/config/config.local.neon"
+
+echo "script: symlinking directories to persist between deploys"
+symlink-shared "log"
+symlink-shared "public/wp-content/uploads"
+symlink-shared "public/wp-content/plugins"
+symlink-shared "public/wp-content/themes"
+
+echo "script: installing composer dependencies"
+pushd "$DEPLOY_DIR"
+composer install
+popd
 
 echo "script: building assets"
 pushd "$DEPLOY_DIR"
