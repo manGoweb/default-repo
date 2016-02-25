@@ -16,7 +16,11 @@ IFS=$'\n\t'
 #/opt/blackbox/bin/blackbox_postdeploy
 #popd
 
-# TODO custom builds etc
+echo "script: building assets"
+pushd "$DEPLOY_DIR"
+mango install
+mango build
+popd
 
 echo "script: swapping symlinks"
 # creating a symlink is not an atomic operation, mv is atomic
