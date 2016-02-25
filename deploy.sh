@@ -49,6 +49,9 @@ echo "script: swapping symlinks"
 # http://blog.moertel.com/posts/2005-08-22-how-to-change-symlinks-atomically.html
 ln -s "$DEPLOY_DIR" "$PROJECT_DIR/live_stage" && mv -Tf "$PROJECT_DIR/live_stage" "$PROJECT_DIR/live"
 
+echo "debug: script: removing wp transient template roots"
+wp-clear-transient "{{ project_database_name }}"
+
 echo "debug: script: reload php-fpm"
 # reliably clears opcache
 sudo /usr/bin/systemctl reload php70-php-fpm.service
