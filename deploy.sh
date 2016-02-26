@@ -19,39 +19,39 @@ function symlink-shared {
 }
 
 # For applications with mangoweb.blackbox
-#echo "script: decrypting configuration"
+#step "decrypting configuration"
 #pushd "$DEPLOY_DIR"
 #/opt/blackbox/bin/blackbox_postdeploy
 #popd
 
-echo "script: creating local config"
+step "creating local config"
 cp "$DEPLOY_DIR/config/config.prod.neon" "$DEPLOY_DIR/config/config.local.neon"
 
-echo "script: symlinking directories to persist between deploys"
+step "symlinking directories to persist between deploys"
 symlink-shared "log"
 symlink-shared "public/wp-content/uploads"
 symlink-shared "public/wp-content/plugins"
 symlink-shared "public/wp-content/themes"
 
-echo "script: installing composer dependencies"
+step "installing composer dependencies"
 pushd "$DEPLOY_DIR"
 composer install
 popd
 
-echo "script: building assets"
+step "building assets"
 pushd "$DEPLOY_DIR"
 mango install
 mango build
 popd
 
-echo "script: swapping symlinks"
+step "swapping symlinks"
 # creating a symlink is not an atomic operation, mv is atomic
 # http://blog.moertel.com/posts/2005-08-22-how-to-change-symlinks-atomically.html
 ln -s "$DEPLOY_DIR" "$PROJECT_DIR/live_stage" && mv -Tf "$PROJECT_DIR/live_stage" "$PROJECT_DIR/live"
 
-echo "debug: script: removing wp transient template roots"
+step "removing wp transient template roots"
 wp-clear-transient "{{ project_database_name }}"
 
-echo "debug: script: reload php-fpm"
+step "reloading php-fpm"
 # reliably clears opcache
 sudo /usr/bin/systemctl reload php70-php-fpm.service
