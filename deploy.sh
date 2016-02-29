@@ -2,6 +2,7 @@
 set -euo pipefail
 IFS=$'\n\t'
 
+# Working directory is set to "$DEPLOY_DIR"
 # Available variables
 # "$GL_USER" username of user doing this deploy (same as pubkey name)
 # "$REV_OLD" full id of revision before deploy
@@ -15,7 +16,7 @@ function symlink-shared {
 		mkdir -p "$PROJECT_DIR/$1"
 		chmod ug+rwX,o= "$PROJECT_DIR/$1"
 	fi
-	rm -rf "$DEPLOY_DIR/$1" && ln -s "$PROJECT_DIR/$1" "$DEPLOY_DIR/$1"
+	rm -rf "${DEPLOY_DIR:?}/$1" && ln -s "$PROJECT_DIR/$1" "$DEPLOY_DIR/$1"
 }
 
 # For applications with mangoweb.blackbox
@@ -25,7 +26,7 @@ function symlink-shared {
 #popd
 
 step "creating local config"
-cp "$DEPLOY_DIR/config/config.prod.neon" "$DEPLOY_DIR/config/config.local.neon"
+cp "config/config.prod.neon" "config/config.local.neon"
 
 step "symlinking directories to persist between deploys"
 symlink-shared "log"
@@ -34,20 +35,14 @@ symlink-shared "public/wp-content/plugins"
 symlink-shared "public/wp-content/themes"
 
 step "installing composer dependencies"
-pushd "$DEPLOY_DIR"
 composer install
-popd
 
 step "building assets"
-pushd "$DEPLOY_DIR"
 mango install
 mango build
-popd
 
 step "swapping symlinks"
-# creating a symlink is not an atomic operation, mv is atomic
-# http://blog.moertel.com/posts/2005-08-22-how-to-change-symlinks-atomically.html
-ln -s "$DEPLOY_DIR" "$PROJECT_DIR/live_stage" && mv -Tf "$PROJECT_DIR/live_stage" "$PROJECT_DIR/live"
+stage-live "$DEPLOY_DIR" "$PROJECT_DIR"
 
 step "removing wp transient template roots"
 wp-clear-transient "{{ project_database_name }}"
