@@ -49,4 +49,4 @@ wp-clear-transient "{{ project_database_name }}"
 
 step "reloading php-fpm"
 # reliably clears opcache
-sudo /usr/bin/systemctl reload php70-php-fpm.service
+sudo /usr/bin/systemctl reload php70-php-fpm
