@@ -30,9 +30,6 @@ cp "config/config.prod.neon" "config/config.local.neon"
 
 step "symlinking directories to persist between deploys"
 symlink-shared "log"
-symlink-shared "public/wp-content/uploads"
-symlink-shared "public/wp-content/plugins"
-symlink-shared "public/wp-content/themes"
 
 step "installing composer dependencies"
 composer install
