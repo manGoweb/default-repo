@@ -19,30 +19,31 @@ function symlink-shared {
 	rm -rf "${DEPLOY_DIR:?}/$1" && ln -s "$PROJECT_DIR/$1" "$DEPLOY_DIR/$1"
 }
 
-# For applications with mangoweb.blackbox
-#step "decrypting configuration"
-#pushd "$DEPLOY_DIR"
-#/opt/blackbox/bin/blackbox_postdeploy
-#popd
 
 step "creating local config"
 cp "config/config.prod.neon" "config/config.local.neon"
 
+
 step "symlinking directories to persist between deploys"
 symlink-shared "log"
 
+
 step "installing composer dependencies"
 composer install
+
 
 step "building assets"
 mango install
 mango build
 
+
 step "swapping symlinks"
 stage-live "$DEPLOY_DIR" "$PROJECT_DIR"
 
+
 step "removing wp transient template roots"
 wp-clear-transient "{{ project_database_name }}"
+
 
 step "reloading php-fpm"
 # reliably clears opcache
