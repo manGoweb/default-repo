@@ -48,3 +48,6 @@ wp-clear-transient "{{ project_database_name }}"
 step "reloading php-fpm"
 # reliably clears opcache
 sudo /usr/bin/systemctl reload php70-php-fpm
+
+step "running deploy tests"
+deploy_tests/start.sh
