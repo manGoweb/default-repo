@@ -2,7 +2,7 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-printf "Test site return code - "
+echo -n "Test site return code - "
 
 response=$(curl -sSLI "$1" 2>&1)
 if [[ $? -eq 0 ]]; then

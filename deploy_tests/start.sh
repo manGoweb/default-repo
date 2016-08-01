@@ -11,5 +11,5 @@ url='https://mangoweb.cz'
 for test in `find deploy_tests/tests -regex 'deploy_tests/tests/'"$stage"'/.*\.sh' -o -regex 'deploy_tests/tests/always/.*\.sh'`
 do
 	"$test" "$url"
-	printf "\n"
+	echo ""
 done
