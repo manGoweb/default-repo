@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+set -euo pipefail
+IFS=$'\n\t'
 
 # Předpokládm nějakou hodnotu (prod/live) v prom $stage
 stage=prod
