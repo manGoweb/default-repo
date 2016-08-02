@@ -4,18 +4,10 @@ IFS=$'\n\t'
 
 echo -n "Test site return code - "
 
-response=$(curl -sSLI "$1" 2>&1)
-if [[ $? -eq 0 ]]; then
-    return_codes=`printf "$response" | grep 'HTTP/1.1'`
-    ok_return_code=`printf "$return_codes" | grep '200 OK' | cut -d" " -f2`
-    if [[ "$ok_return_code" = '200' ]]; then
-    	echo "OK $ok_return_code"
-    	exit 0
-    else
-    	echo "failed: $return_codes"
-    	exit 1
-    fi
+RETURN_CODE="$(curl "$1" --silent --show-error --head --location --output /dev/null --write-out '%{http_code}')"
+if [[ "$RETURN_CODE" != "200" ]]; then
+    echo "failed: $RETURN_CODE"
+    exit 1
 else
-	echo "failed: $response"
-	exit 1
+	echo "200 OK"
 fi

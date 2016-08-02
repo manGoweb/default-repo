@@ -3,25 +3,25 @@ set -euo pipefail
 IFS=$'\n\t'
 
 function check {
-    if [[ $? -eq 0 ]]; then
+    if "$@"; then
         echo "OK"
     else
-        echo "FAIL"
-        return_value=1
+        echo "FAIL "
     fi
 }
 
-return_value=0
+function match {
+  echo "$1" | grep "${@:2}" &> /dev/null
+}
 
-head=`curl -sSL "$1" | tr -d "\n" | grep -o '<head>.*</head>'`
 echo "Test head content:"
+HEAD="$(curl --silent --show-error --location "$1" | tr -d "\n" | grep -o '<head>.*</head>')"
+
 
 echo -n "og:title - "
-echo "$head" | grep "<meta property=[\"']og:title[\"'] content=[\"'][^>]\+[\"']>" > /dev/null
-check
+check match "$HEAD" "<meta property=[\"']og:title[\"'] content=[\"'][^>]\+[\"']>"
  
 echo -n "description - "
-echo "$head" | grep "<meta \(property\|name\)=[\"']\(og\)\?description[\"'] content=[\"'][^>]\+[\"']>" > /dev/null
-check
+check match "<meta \(property\|name\)=[\"']\(og:\)\?description[\"'] content=[\"'][^>]\+[\"']>"
     
-exit $return_value
+
