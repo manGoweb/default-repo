@@ -2,8 +2,8 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-    echo "No arguments provided in $0"
 if [ $# -ne 1 ]; then
+    echo "Usage: $0 url"
     exit 1
 fi
 URL="$1"
