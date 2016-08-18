@@ -17,7 +17,8 @@ function check {
 }
 
 function match {
-  echo "$1" | grep "${@:2}" &> /dev/null
+ 	echo "$1" | grep --silent "${@:2}" &> /dev/null
+}
 
 function test-case {
 	echo -n "$@"
