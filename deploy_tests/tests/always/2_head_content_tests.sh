@@ -3,7 +3,7 @@ set -euo pipefail
 IFS=$'\n\t'
 
 if [ $# -eq 0 ]; then
-    echo "No arguments provided"
+    echo "No arguments provided in $0"
     exit 1
 fi
 URL="$1"
