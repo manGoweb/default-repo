@@ -15,6 +15,6 @@ RETURN_CODE="$(curl "$URL" --silent --show-error --head --location --output /dev
 if [[ "$RETURN_CODE" != "200" ]]; then
     echo "failed: $RETURN_CODE"
     exit 1
-else
-	echo "200 OK"
 fi
+echo "200 OK"
+
