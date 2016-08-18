@@ -2,8 +2,8 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-if [ $# -eq 0 ]; then
     echo "No arguments provided in $0"
+if [ $# -ne 1 ]; then
     exit 1
 fi
 URL="$1"
