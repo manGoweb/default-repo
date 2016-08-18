@@ -18,16 +18,19 @@ function check {
 
 function match {
   echo "$1" | grep "${@:2}" &> /dev/null
+
+function test-case {
+	echo -n "$@"
 }
 
 echo "Test head content:"
 HEAD="$(curl --silent --show-error --location "$URL" | tr -d "\n" | grep -o '<head>.*</head>')"
 
 
-echo -n "og:title - "
+test-case "og:title - "
 check match "$HEAD" "<meta property=[\"']og:title[\"'] content=[\"'][^>]\+[\"']>"
  
-echo -n "description - "
+test-case "description - "
 check match "<meta \(property\|name\)=[\"']\(og:\)\?description[\"'] content=[\"'][^>]\+[\"']>"
     
 
