@@ -10,6 +10,7 @@ IFS=$'\n\t'
 # "$REF_NAME" full name of reference deployed to (eg. ref/heads/master)
 # "$PROJECT_DIR" absolute path to project directory
 # "$DEPLOY_DIR" absolute path to extracted stage
+URL="$(echo $PROJECT_DIR | cut -d"/" -f3)"
 
 function symlink-shared {
 	if [[ ! -d "$PROJECT_DIR/$1" ]]; then
@@ -21,7 +22,17 @@ function symlink-shared {
 
 
 step "creating local config"
-cp "config/config.prod.neon" "config/config.local.neon"
+if [ "$HOSTNAME" = "shared-beta" ]; then
+    CONFIG="config.beta.neon"
+    STAGE="beta"
+elif [[ "$HOSTNAME" =~ ^shared-prod ]]; then
+    CONFIG="config.prod.neon"
+    STAGE="prod"
+else
+    echo "Unknown environment '$HOSTNAME'"
+    exit 1
+fi
+cp "config/$CONFIG" "config/config.local.neon"
 
 
 step "symlinking directories to persist between deploys"
@@ -50,4 +61,4 @@ step "reloading php-fpm"
 sudo /usr/bin/systemctl reload php70-php-fpm
 
 step "running post-deploy tests"
-deploy_tests/start.sh
+deploy_tests/start.sh "$STAGE" "URL"
