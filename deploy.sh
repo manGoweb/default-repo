@@ -21,7 +21,17 @@ function symlink-shared {
 
 
 step "creating local config"
-cp "config/config.prod.neon" "config/config.local.neon"
+if [ "$HOSTNAME" = "shared-beta" ]; then
+    CONFIG="beta"
+    DB_NAME="{{ project_database_name }}"
+elif [[ "$HOSTNAME" =~ ^shared-prod ]]; then
+    CONFIG="prod"
+    DB_NAME=""
+else
+    echo "Unknown environment '$HOSTNAME'"
+    exit 1
+fi
+cp "config/config.$CONFIG.neon" "config/config.local.neon"
 
 
 step "symlinking directories to persist between deploys"
@@ -42,8 +52,11 @@ stage-live "$DEPLOY_DIR" "$PROJECT_DIR"
 
 
 step "removing wp transient template roots"
-wp-clear-transient "{{ project_database_name }}"
-
+if [ -z "$DB_NAME" ]; then
+    echo "No database specified - skipping"
+else
+    wp-clear-transient "$DB_NAME"
+fi
 
 step "reloading php-fpm"
 # reliably clears opcache
