@@ -21,7 +21,15 @@ function symlink-shared {
 
 
 step "creating local config"
-cp "config/config.prod.neon" "config/config.local.neon"
+if [ "$HOSTNAME" = "shared-beta" ]; then
+	CONFIG="config.beta.neon"
+elif [[ "$HOSTNAME" =~ ^shared-prod ]]; then
+	CONFIG="config.prod.neon"
+else
+	echo "Unknown environment '$HOSTNAME'"
+	exit 1
+fi
+cp "config/$CONFIG" "config/config.local.neon"
 
 
 step "symlinking directories to persist between deploys"
